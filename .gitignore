@@ -1,0 +1,14 @@
+.gitmodules
+node_modules/
+.env
+build/
+unused/
+dist/
+FDT/
+Flatters.bat
+package-lock.json
+*.txt
+.openzeppelin/dev*.json
+.openzeppelin/unknown*.json
+coverage
+coverage.json
