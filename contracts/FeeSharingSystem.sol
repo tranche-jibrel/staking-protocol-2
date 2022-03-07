@@ -1,59 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-
-import {TokenDistributor} from "./TokenDistributor.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import"./FeeSharingSystemStorage.sol";
+import"./interfaces/IFeeSharingSystem.sol";
 
 /**
  * @title FeeSharingSystem
  * @notice It handles the distribution of fees using
  * WETH along with the auto-compounding of SLICE.
  */
-contract FeeSharingSystem is ReentrancyGuard, Ownable {
-    using SafeERC20 for IERC20;
-
-    struct UserInfo {
-        uint256 shares; // shares of token staked
-        uint256 userRewardPerTokenPaid; // user reward per token paid
-        uint256 rewards; // pending rewards
-    }
-
-    // Precision factor for calculating rewards and exchange rate
-    uint256 public constant PRECISION_FACTOR = 10**18;
-
-    IERC20 public immutable sliceToken;
-
-    IERC20 public immutable rewardToken;
-
-    TokenDistributor public immutable tokenDistributor;
-
-    // Reward rate (block)
-    uint256 public currentRewardPerBlock;
-
-    // Last reward adjustment block number
-    uint256 public lastRewardAdjustment;
-
-    // Last update block for rewards
-    uint256 public lastUpdateBlock;
-
-    // Current end block for the current reward period
-    uint256 public periodEndBlock;
-
-    // Reward per token stored
-    uint256 public rewardPerTokenStored;
-
-    // Total existing shares
-    uint256 public totalShares;
-
-    mapping(address => UserInfo) public userInfo;
-
-    event Deposit(address indexed user, uint256 amount, uint256 harvestedAmount);
-    event Harvest(address indexed user, uint256 harvestedAmount);
-    event NewRewardPeriod(uint256 numberBlocks, uint256 rewardPerBlock, uint256 reward);
-    event Withdraw(address indexed user, uint256 amount, uint256 harvestedAmount);
+contract FeeSharingSystem is ReentrancyGuardUpgradeable, OwnableUpgradeable, FeeSharingSystemStorage, IFeeSharingSystem {
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     /**
      * @notice Constructor
@@ -61,11 +21,12 @@ contract FeeSharingSystem is ReentrancyGuard, Ownable {
      * @param _rewardToken address of the reward token
      * @param _tokenDistributor address of the token distributor contract
      */
-    constructor(address _sliceToken,
-        address _rewardToken,
-        address _tokenDistributor) {
-        rewardToken = IERC20(_rewardToken);
-        sliceToken = IERC20(_sliceToken);
+    function initialize (address _sliceToken,
+            address _rewardToken,
+            address _tokenDistributor) public initializer {
+        OwnableUpgradeable.__Ownable_init();
+        rewardToken = IERC20Upgradeable(_rewardToken);
+        sliceToken = IERC20Upgradeable(_sliceToken);
         tokenDistributor = TokenDistributor(_tokenDistributor);
     }
 

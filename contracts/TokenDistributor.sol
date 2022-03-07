@@ -1,78 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import {IERC20, SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "./TokenDistributorStorage.sol";
 import {ILooksRareToken} from "./interfaces/ILooksRareToken.sol";
+import {ITokenDistributor} from "./interfaces/ITokenDistributor.sol";
 
 /**
  * @title TokenDistributor
  * @notice It handles the distribution of SLICE token.
  * It auto-adjusts block rewards over a set number of periods.
  */
-contract TokenDistributor is ReentrancyGuard {
-    using SafeERC20 for IERC20;
-    using SafeERC20 for ILooksRareToken;
-
-    struct StakingPeriod {
-        uint256 rewardPerBlockForStaking;
-        uint256 rewardPerBlockForOthers;
-        uint256 periodLengthInBlock;
-    }
-
-    struct UserInfo {
-        uint256 amount; // Amount of staked tokens provided by user
-        uint256 rewardDebt; // Reward debt
-    }
-
-    // Precision factor for calculating rewards
-    uint256 public constant PRECISION_FACTOR = 10**12;
-
-    ILooksRareToken public immutable sliceToken;
-
-    address public immutable tokenSplitter;
-
-    // Number of reward periods
-    uint256 public immutable NUMBER_PERIODS;
-
-    // Block number when rewards start
-    uint256 public immutable START_BLOCK;
-
-    // Accumulated tokens per share
-    uint256 public accTokenPerShare;
-
-    // Current phase for rewards
-    uint256 public currentPhase;
-
-    // Block number when rewards end
-    uint256 public endBlock;
-
-    // Block number of the last update
-    uint256 public lastRewardBlock;
-
-    // Tokens distributed per block for other purposes (team + treasury + trading rewards)
-    uint256 public rewardPerBlockForOthers;
-
-    // Tokens distributed per block for staking
-    uint256 public rewardPerBlockForStaking;
-
-    // Total amount staked
-    uint256 public totalAmountStaked;
-
-    mapping(uint256 => StakingPeriod) public stakingPeriod;
-
-    mapping(address => UserInfo) public userInfo;
-
-    event Compound(address indexed user, uint256 harvestedAmount);
-    event Deposit(address indexed user, uint256 amount, uint256 harvestedAmount);
-    event NewRewardsPerBlock(
-        uint256 indexed currentPhase,
-        uint256 startBlock,
-        uint256 rewardPerBlockForStaking,
-        uint256 rewardPerBlockForOthers
-    );
-    event Withdraw(address indexed user, uint256 amount, uint256 harvestedAmount);
+contract TokenDistributor is ReentrancyGuardUpgradeable, TokenDistributorStorage, ITokenDistributor {
+    // using SafeERC20Upgradeable for IERC20Upgradeable;
+    using SafeERC20Upgradeable for ILooksRareToken;
 
     /**
      * @notice Constructor
@@ -84,14 +26,14 @@ contract TokenDistributor is ReentrancyGuard {
      * @param _periodLengthesInBlocks array of period lengthes
      * @param _numberPeriods number of periods with different rewards/lengthes (e.g., if 3 changes --> 4 periods)
      */
-    constructor(address _sliceToken,
-        address _tokenSplitter,
-        uint256 _startBlock,
-        uint256[] memory _rewardsPerBlockForStaking,
-        uint256[] memory _rewardsPerBlockForOthers,
-        uint256[] memory _periodLengthesInBlocks,
-        uint256 _numberPeriods
-    ) {
+    function initialize (address _sliceToken,
+            address _tokenSplitter,
+            uint256 _startBlock,
+            uint256[] memory _rewardsPerBlockForStaking,
+            uint256[] memory _rewardsPerBlockForOthers,
+            uint256[] memory _periodLengthesInBlocks,
+            uint256 _numberPeriods) public initializer {
+        // OwnableUpgradeable.__Ownable_init();
         require(
             (_periodLengthesInBlocks.length == _numberPeriods) &&
                 (_rewardsPerBlockForStaking.length == _numberPeriods) &&

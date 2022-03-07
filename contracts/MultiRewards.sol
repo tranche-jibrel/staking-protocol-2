@@ -1,51 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "./MultiRewardsStorage.sol";
+import "./interfaces/IMultiRewards.sol";
 
 
-contract MultiRewards is Ownable, ReentrancyGuard, Pausable {
-    using SafeMath for uint256;
-    using SafeERC20 for IERC20;
-
-    /* ========== STATE VARIABLES ========== */
-    struct Reward {
-        address rewardsDistributor;
-        uint256 rewardsDuration;
-        uint256 periodFinish;
-        uint256 rewardRate;
-        uint256 lastUpdateTime;
-        uint256 rewardPerTokenStored;
-    }
-    
-    IERC20 public stakingToken;
-    mapping(address => Reward) public rewardData;
-    address[] public rewardTokens;
-
-    // user -> reward token -> amount
-    mapping(address => mapping(address => uint256)) public userRewardPerTokenPaid;
-    mapping(address => mapping(address => uint256)) public rewards;
-
-    uint256 private _totalSupply;
-    mapping(address => uint256) private _balances;
-    
-    /* ========== EVENTS ========== */
-    event RewardAdded(uint256 reward);
-    event Staked(address indexed user, uint256 amount);
-    event Withdrawn(address indexed user, uint256 amount);
-    event RewardPaid(address indexed user, address indexed rewardsToken, uint256 reward);
-    event RewardsDurationUpdated(address token, uint256 newDuration);
-    event Recovered(address token, uint256 amount);
+contract MultiRewards is OwnableUpgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, MultiRewardsStorage, IMultiRewards {
+    using SafeMathUpgradeable for uint256;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     /* ========== CONSTRUCTOR ========== */
-    constructor(address _owner, address _stakingToken) {
-        stakingToken = IERC20(_stakingToken);
+    function initialize (address _owner, address _stakingToken) public initializer {
+        OwnableUpgradeable.__Ownable_init();
+        stakingToken = IERC20Upgradeable(_stakingToken);
         transferOwnership(_owner);
     }
 
@@ -66,7 +40,7 @@ contract MultiRewards is Ownable, ReentrancyGuard, Pausable {
     }
 
     function lastTimeRewardApplicable(address _rewardsToken) public view returns (uint256) {
-        return Math.min(block.timestamp, rewardData[_rewardsToken].periodFinish);
+        return MathUpgradeable.min(block.timestamp, rewardData[_rewardsToken].periodFinish);
     }
 
     function rewardPerToken(address _rewardsToken) public view returns (uint256) {
@@ -114,7 +88,7 @@ contract MultiRewards is Ownable, ReentrancyGuard, Pausable {
             uint256 reward = rewards[msg.sender][_rewardsToken];
             if (reward > 0) {
                 rewards[msg.sender][_rewardsToken] = 0;
-                IERC20(_rewardsToken).safeTransfer(msg.sender, reward);
+                IERC20Upgradeable(_rewardsToken).safeTransfer(msg.sender, reward);
                 emit RewardPaid(msg.sender, _rewardsToken, reward);
             }
         }
@@ -131,7 +105,7 @@ contract MultiRewards is Ownable, ReentrancyGuard, Pausable {
         require(rewardData[_rewardsToken].rewardsDistributor == msg.sender);
         // handle the transfer of reward tokens via `transferFrom` to reduce the number
         // of transactions required and ensure correctness of the reward amount
-        IERC20(_rewardsToken).safeTransferFrom(msg.sender, address(this), reward);
+        IERC20Upgradeable(_rewardsToken).safeTransferFrom(msg.sender, address(this), reward);
 
         if (block.timestamp >= rewardData[_rewardsToken].periodFinish) {
             rewardData[_rewardsToken].rewardRate = reward.div(rewardData[_rewardsToken].rewardsDuration);
@@ -150,7 +124,7 @@ contract MultiRewards is Ownable, ReentrancyGuard, Pausable {
     function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyOwner {
         require(tokenAddress != address(stakingToken), "Cannot withdraw staking token");
         require(rewardData[tokenAddress].lastUpdateTime == 0, "Cannot withdraw reward token");
-        IERC20(tokenAddress).safeTransfer(owner(), tokenAmount);
+        IERC20Upgradeable(tokenAddress).safeTransfer(owner(), tokenAmount);
         emit Recovered(tokenAddress, tokenAmount);
     }
 

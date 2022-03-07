@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
-interface ILooksRareToken is IERC20 {
+interface ILooksRareToken is IERC20Upgradeable {
     function SUPPLY_CAP() external view returns (uint256);
 
     function mint(address account, uint256 amount) external returns (bool);
