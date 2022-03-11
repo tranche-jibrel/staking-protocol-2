@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/ILooksRareToken.sol";
+import "./interfaces/ISliceToken.sol";
 
 contract TokenDistributorStorage {
     struct StakingPeriod {
@@ -18,7 +18,7 @@ contract TokenDistributorStorage {
     // Precision factor for calculating rewards
     uint256 public constant PRECISION_FACTOR = 10**12;
 
-    ILooksRareToken public sliceToken;
+    ISliceToken public sliceToken;
 
     address public tokenSplitter;
 

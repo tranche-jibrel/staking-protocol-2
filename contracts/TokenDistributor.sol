@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "./TokenDistributorStorage.sol";
-import {ILooksRareToken} from "./interfaces/ILooksRareToken.sol";
+import {ISliceToken} from "./interfaces/ISliceToken.sol";
 import {ITokenDistributor} from "./interfaces/ITokenDistributor.sol";
 
 /**
@@ -14,7 +14,7 @@ import {ITokenDistributor} from "./interfaces/ITokenDistributor.sol";
  */
 contract TokenDistributor is ReentrancyGuardUpgradeable, TokenDistributorStorage, ITokenDistributor {
     // using SafeERC20Upgradeable for IERC20Upgradeable;
-    using SafeERC20Upgradeable for ILooksRareToken;
+    using SafeERC20Upgradeable for ISliceToken;
 
     /**
      * @notice Constructor
@@ -40,18 +40,18 @@ contract TokenDistributor is ReentrancyGuardUpgradeable, TokenDistributorStorage
                 (_rewardsPerBlockForStaking.length == _numberPeriods),
             "Distributor: Lengthes must match numberPeriods"
         );
-
+/*
         // 1. Operational checks for supply
-        uint256 nonCirculatingSupply = ILooksRareToken(_sliceToken).SUPPLY_CAP() -
-            ILooksRareToken(_sliceToken).totalSupply();
+        uint256 nonCirculatingSupply = ISliceToken(_sliceToken).SUPPLY_CAP() -
+            ISliceToken(_sliceToken).totalSupply();
 
         uint256 amountTokensToBeMinted;
-
+*/
         for (uint256 i = 0; i < _numberPeriods; i++) {
-            amountTokensToBeMinted +=
+            /*amountTokensToBeMinted +=
                 (_rewardsPerBlockForStaking[i] * _periodLengthesInBlocks[i]) +
                 (_rewardsPerBlockForOthers[i] * _periodLengthesInBlocks[i]);
-
+            */
             stakingPeriod[i] = StakingPeriod({
                 rewardPerBlockForStaking: _rewardsPerBlockForStaking[i],
                 rewardPerBlockForOthers: _rewardsPerBlockForOthers[i],
@@ -59,10 +59,10 @@ contract TokenDistributor is ReentrancyGuardUpgradeable, TokenDistributorStorage
             });
         }
 
-        require(amountTokensToBeMinted == nonCirculatingSupply, "Distributor: Wrong reward parameters");
+        // require(amountTokensToBeMinted == nonCirculatingSupply, "Distributor: Wrong reward parameters");
 
         // 2. Store values
-        sliceToken = ILooksRareToken(_sliceToken);
+        sliceToken = ISliceToken(_sliceToken);
         tokenSplitter = _tokenSplitter;
         rewardPerBlockForStaking = _rewardsPerBlockForStaking[0];
         rewardPerBlockForOthers = _rewardsPerBlockForOthers[0];
