@@ -19,6 +19,9 @@ const FeeSharingSystem = artifacts.require('FeeSharingSystem');
 const TokenDistributor = artifacts.require('TokenDistributor');
 const TradingRewardsDistributor = artifacts.require('TradingRewardsDistributor');
 
+const JFeesCollector = artifacts.require('JFeesCollector');
+const JAdminTools = artifacts.require('JAdminTools');
+
 // const AdminTools = "0x8532477A282DA1f68BB49F0893714e10F03d6186";
 // const FeesCollector = "0x16d7dFBa832722F240915e63198e411153AC602b"; 
 // const TranchesDeployer = "0x8cae1786645184BBc9078e50CeD90ac9eE0b3ADE";
@@ -41,6 +44,14 @@ module.exports = async (deployer, network, accounts) => {
 
     const MRinstance = await deployProxy(MultiRewards, [tokenOwner, SLICEinstance.address], { from: tokenOwner });
     console.log('MultiRewards Deployed: ', MRinstance.address);
+
+    /*********************** */
+
+    const JATinstance = await deployProxy(JAdminTools, [], { from: tokenOwner });
+    console.log('JAdminTools Deployed: ', JATinstance.address);
+
+    const JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: tokenOwner });
+    console.log('JFeesCollector Deployed: ', JFCinstance.address);
 
     /*********************** */
 

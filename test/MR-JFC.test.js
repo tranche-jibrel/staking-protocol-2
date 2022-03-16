@@ -23,9 +23,13 @@ const MultiRewards = artifacts.require('MultiRewards');
 const SliceToken = artifacts.require('SliceToken');
 const RewardToken = artifacts.require('RewardToken');
 
+const JFeesCollector = artifacts.require('JFeesCollector');
+const JAdminTools = artifacts.require('JAdminTools');
+
 const {ZERO_ADDRESS} = constants;
 
-let tokenOwner, user1;
+let jFCContract, jATContract;
+let tokenOwner, user1, user2;
 
 const fromWei = (x) => web3.utils.fromWei(x.toString());
 const toWei = (x) => web3.utils.toWei(x.toString());
@@ -37,6 +41,7 @@ contract("Multirewards", function (accounts) {
   it("ETH balances", async function () {
     tokenOwner = accounts[0];
     user1 = accounts[1];
+    user2 = accounts[2];
     console.log(tokenOwner);
     console.log(await web3.eth.getBalance(tokenOwner));
     console.log(await web3.eth.getBalance(user1));
@@ -52,6 +57,16 @@ contract("Multirewards", function (accounts) {
     expect(rewardContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(rewardContract.address).to.match(/0x[0-9a-fA-F]{40}/);
     console.log(rewardContract.address);
+
+    jFCContract = await JFeesCollector.deployed();
+    expect(jFCContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(jFCContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(jFCContract.address);
+
+    jATContract = await JAdminTools.deployed();
+    expect(jATContract.address).to.be.not.equal(ZERO_ADDRESS);
+    expect(jATContract.address).to.match(/0x[0-9a-fA-F]{40}/);
+    console.log(jATContract.address);
 
     mrContract = await MultiRewards.deployed();
     expect(mrContract.address).to.be.not.equal(ZERO_ADDRESS);
@@ -104,6 +119,12 @@ contract("Multirewards", function (accounts) {
       console.log("slice tokens balance: " + fromWei(await sliceContract.balanceOf(tokenOwner)).toString())
     });
 
-});
+  });
+
+  it('transfer values to JFC', async function () {
+    // res = await mrContract.getReward({ from: tokenOwner });
+    // console.log("reward tokens balance: " + fromWei(await rewardContract.balanceOf(tokenOwner)).toString())
+    // console.log("slice tokens balance: " + fromWei(await sliceContract.balanceOf(tokenOwner)).toString())
+  });
 
 });
