@@ -14,7 +14,8 @@ module.exports = {
     gasLimit: 0xfffffffffff,
     // logger: console,
     port: 9545,
-    fork: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`, //@13410306`,
+    // fork: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`, //@13410306`,
+    fork: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_KEY}/@13410306`,
     network_id: 1,
     unlocked_accounts: [
       '0x38720D56899d46cAD253d08f7cD6CC89d2c83190', // DAI tests
