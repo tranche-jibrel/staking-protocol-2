@@ -43,6 +43,10 @@ contract MultiRewards is OwnableUpgradeable, ReentrancyGuardUpgradeable, Pausabl
         return MathUpgradeable.min(block.timestamp, rewardData[_rewardsToken].periodFinish);
     }
 
+    function getTokenBalance(address _rewardsToken) public view returns (uint256) {
+        return IERC20Upgradeable(_rewardsToken).balanceOf(address(this));
+    }
+
     function rewardPerToken(address _rewardsToken) public view returns (uint256) {
         if (_totalSupply == 0) {
             return rewardData[_rewardsToken].rewardPerTokenStored;
@@ -106,6 +110,22 @@ contract MultiRewards is OwnableUpgradeable, ReentrancyGuardUpgradeable, Pausabl
         // handle the transfer of reward tokens via `transferFrom` to reduce the number
         // of transactions required and ensure correctness of the reward amount
         IERC20Upgradeable(_rewardsToken).safeTransferFrom(msg.sender, address(this), reward);
+
+        if (block.timestamp >= rewardData[_rewardsToken].periodFinish) {
+            rewardData[_rewardsToken].rewardRate = reward.div(rewardData[_rewardsToken].rewardsDuration);
+        } else {
+            uint256 remaining = rewardData[_rewardsToken].periodFinish.sub(block.timestamp);
+            uint256 leftover = remaining.mul(rewardData[_rewardsToken].rewardRate);
+            rewardData[_rewardsToken].rewardRate = reward.add(leftover).div(rewardData[_rewardsToken].rewardsDuration);
+        }
+
+        rewardData[_rewardsToken].lastUpdateTime = block.timestamp;
+        rewardData[_rewardsToken].periodFinish = block.timestamp.add(rewardData[_rewardsToken].rewardsDuration);
+        emit RewardAdded(reward);
+    }
+
+    function notifyRewardAmountNoTransfer(address _rewardsToken, uint256 reward) external onlyOwner updateReward(address(0)) {
+        require(getTokenBalance(_rewardsToken) >= reward);
 
         if (block.timestamp >= rewardData[_rewardsToken].periodFinish) {
             rewardData[_rewardsToken].rewardRate = reward.div(rewardData[_rewardsToken].rewardsDuration);

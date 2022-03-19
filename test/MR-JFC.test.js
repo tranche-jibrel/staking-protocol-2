@@ -160,4 +160,39 @@ contract("Multirewards", function (accounts) {
     console.log("MR WETH Balance: " + fromWei(await wethContract.methods.balanceOf(mrContract.address).call()) + " WETH")
   });
 
+  it('transfer values to JFC again', async function () {
+    await sliceContract.transfer(jFCContract.address, toWei("50"), { from: tokenOwner });
+    console.log("JFC slice tokens balance: " + fromWei(await sliceContract.balanceOf(jFCContract.address)).toString() + " SLICE")
+  });
+
+  it('send token from JFC and call notify rewards with funds already in MR contract', async function () {
+    jfcTokenBal = await jFCContract.getTokenBalance(sliceContract.address)
+    await jFCContract.sendTokensToReceiver(sliceContract.address, mrContract.address, jfcTokenBal, {from : tokenOwner})
+
+    console.log("MR SLICE Balance: " + fromWei(await mrContract.getTokenBalance(sliceContract.address)) + " SLICE")
+    
+    await mrContract.notifyRewardAmountNoTransfer(sliceContract.address, jfcTokenBal)
+    console.log(JSON.stringify(await mrContract.rewardData(sliceContract.address)))
+  });
+
+  it('staking slice', async function () {
+    await sliceContract.approve(mrContract.address, toWei("1000"), { from: tokenOwner });
+    await mrContract.stake(toWei(1000), { from: tokenOwner });
+    res = await mrContract.rewardPerToken(rewardContract.address);
+    console.log("reward tokens per slice: " + fromWei(res).toString())
+    res = await mrContract.rewardPerToken(sliceContract.address);
+    console.log("slice tokens per slice: " + fromWei(res).toString())
+  });
+
+  it('time passes...', async function () {
+    const maturity = Number(time.duration.seconds(500));
+    let block = await web3.eth.getBlockNumber();
+    console.log((await web3.eth.getBlock(block)).timestamp)
+
+    await timeMachine.advanceTimeAndBlock(maturity);
+
+    block = await web3.eth.getBlockNumber()
+    console.log((await web3.eth.getBlock(block)).timestamp)
+  });
+
 });
