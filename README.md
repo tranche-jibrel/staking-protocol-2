@@ -77,22 +77,22 @@ All values will be sent to new vault and tokens inside contract will be switched
     <tbody>
         <tr>
             <td>JAdminTools</td>
-            <td><font color="red">36.84%</font></td>
+            <td>```-36.84%```</font></td>
             <td>---</td>
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><font color="red">33.33%</font></td>
+            <td>```-33.33%```</font></td>
             <td>---</td>
         </tr>
         <tr>
             <td>MultiRewards</td>
-            <td><font color="red">47.89%</font></td>
+            <td>```-47.89%```</font></td>
             <td>---</td>
         </tr>
         <tr>
             <td>TransferETHHelper</td>
-            <td><font color="green">100%</font></td>
+            <td>```+100%```</font></td>
             <td>---</td>
         </tr>
     </tbody>
