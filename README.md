@@ -77,17 +77,17 @@ All values will be sent to new vault and tokens inside contract will be switched
     <tbody>
         <tr>
             <td>JAdminTools</td>
-            <td><code>36.84% &#x26A0;</code></td>
+            <td><code>36.84% &#x1F534;</code></td>
             <td>---</td>
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>33.33% &#x26A0;</code></td>
+            <td><code>33.33% &#x1F534;</code></td>
             <td>---</td>
         </tr>
         <tr>
             <td>MultiRewards</td>
-            <td><code>47.89% &#x26A0;</code></td>
+            <td><code>47.89% &#x1F534;</code></td>
             <td>---</td>
         </tr>
         <tr>
