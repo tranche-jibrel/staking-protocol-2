@@ -195,4 +195,22 @@ contract("Multirewards", function (accounts) {
     console.log((await web3.eth.getBlock(block)).timestamp)
   });
 
+  it('some more tests on JAdminTools contract', async function () {
+    await jATContract.updateVersion(1000, { from: tokenOwner });
+    await jATContract.addAdmin(user2, { from: tokenOwner });
+    await jATContract.removeAdmin(user2, { from: tokenOwner });
+    await jATContract.addAdmin(user2, { from: tokenOwner });
+    await jATContract.renounceAdmin({ from: user2 });
+  });
+
+  it('some more tests on JFeesCollector contract', async function () {
+    await jFCContract.updateVersion(1000, { from: tokenOwner });
+    await jFCContract.disallowToken(sliceContract.address, { from: tokenOwner });
+    await jFCContract.allowToken(rewardContract.address)
+    await jFCContract.withdrawTokens(rewardContract.address, 0, { from: tokenOwner });
+    await jFCContract.setUniswapAddresses(user2, user2, { from: tokenOwner });
+    await jFCContract.setAdminToolsAddress(user2, { from: tokenOwner });
+    await jFCContract.pairInfo(sliceContract.address, rewardContract.address)
+  });
+
 });
