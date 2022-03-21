@@ -82,6 +82,7 @@ contract("Multirewards", function (accounts) {
   it('distribute rewards in slice and reward tokens', async function () {
     // reward token
     await rewardContract.approve(mrContract.address, toWei("100"), { from: tokenOwner });
+    await mrContract.addReward(rewardContract.address, tokenOwner, 1000, { from: tokenOwner });
     await mrContract.setRewardsDistributor(rewardContract.address, tokenOwner, { from: tokenOwner })
     await mrContract.setRewardsDuration(rewardContract.address, 1000, { from: tokenOwner })
     await mrContract.notifyRewardAmount(rewardContract.address, toWei("100"), { from: tokenOwner });
@@ -210,7 +211,16 @@ contract("Multirewards", function (accounts) {
     await jFCContract.withdrawTokens(rewardContract.address, 0, { from: tokenOwner });
     await jFCContract.setUniswapAddresses(user2, user2, { from: tokenOwner });
     await jFCContract.setAdminToolsAddress(user2, { from: tokenOwner });
-    await jFCContract.pairInfo(sliceContract.address, rewardContract.address)
+    await expectRevert.unspecified(jFCContract.pairInfo(sliceContract.address, rewardContract.address))
+  });
+
+  it('some more tests on MR contract', async function () {
+    await mrContract.totalSupply();
+    await mrContract.getRewardForDuration(sliceContract.address)
+    await mrContract.balanceOf(tokenOwner)
+    await mrContract.earned(tokenOwner, sliceContract.address)
+    await mrContract.exit({ from: tokenOwner });
+    await expectRevert(mrContract.recoverERC20(rewardContract.address, 0, { from: tokenOwner }), "Cannot withdraw reward token");
   });
 
 });

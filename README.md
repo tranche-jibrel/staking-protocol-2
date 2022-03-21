@@ -82,12 +82,12 @@ All values will be sent to new vault and tokens inside contract will be switched
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>64,58% &#x1F7E1;</code></td>
+            <td><code>64.58% &#x1F7E1;</code></td>
             <td>---</td>
         </tr>
         <tr>
             <td>MultiRewards</td>
-            <td><code>47.89% &#x1F534;</code></td>
+            <td><code>88.73% &#x1F7E2;</code></td>
             <td>---</td>
         </tr>
         <tr>
@@ -123,7 +123,7 @@ All values will be sent to new vault and tokens inside contract will be switched
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>8,88</code></td>
+            <td><code>8.88</code></td>
             <td>Fees collector and uniswap swapper (implementation), it changes all fees and extra tokens into new interests for token holders, sending back extra mount to Compound protocol contract. Upgradeable.</td>
         </tr>
         <tr>
