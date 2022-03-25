@@ -9,4 +9,5 @@ interface IMultiRewards {
     event RewardPaid(address indexed user, address indexed rewardsToken, uint256 reward);
     event RewardsDurationUpdated(address token, uint256 newDuration);
     event Recovered(address token, uint256 amount);
+    function notifyRewardAmount(address _rewardsToken, uint256 reward) external;
 }

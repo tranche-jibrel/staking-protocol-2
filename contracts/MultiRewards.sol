@@ -106,7 +106,7 @@ contract MultiRewards is OwnableUpgradeable, ReentrancyGuardUpgradeable, Pausabl
     /* ========== RESTRICTED FUNCTIONS ========== */
 
     function notifyRewardAmount(address _rewardsToken, uint256 reward) external updateReward(address(0)) {
-        require(rewardData[_rewardsToken].rewardsDistributor == msg.sender);
+        require(rewardData[_rewardsToken].rewardsDistributor == msg.sender, "Not a distributor");
         // handle the transfer of reward tokens via `transferFrom` to reduce the number
         // of transactions required and ensure correctness of the reward amount
         IERC20Upgradeable(_rewardsToken).safeTransferFrom(msg.sender, address(this), reward);

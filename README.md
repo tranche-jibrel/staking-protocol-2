@@ -6,9 +6,11 @@ MultiRewards Protocol is a decentralized protocol for managing rewards to Slice 
 
 ## Development
 
-Present version deal with rewards distributed that resides outside the contract or outside of it, simply transferring tokens to this contract.
+Current version deal with rewards distributed that resides outside the contract or outside of it, simply transferring tokens to this contract.
 
-A possible variation could be that Fees Collector implements functions to call MultiRewards methjods allowing to start new distribution, TBD
+Fees Collector contract implements functions to call MultiRewards methods allowing to start new distribution with same parameters as the previous one.
+
+Both ways to distribute rewards are now possible, electing the distributor contract in MultiRewards contract.
 
 ### Install Dependencies
 
@@ -82,7 +84,7 @@ All values will be sent to new vault and tokens inside contract will be switched
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>64.58% &#x1F7E1;</code></td>
+            <td><code>67.92% &#x1F7E1;</code></td>
             <td>---</td>
         </tr>
         <tr>
@@ -123,7 +125,7 @@ All values will be sent to new vault and tokens inside contract will be switched
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>8.88</code></td>
+            <td><code>9.62</code></td>
             <td>Fees collector and uniswap swapper (implementation), it changes all fees and extra tokens into new interests for token holders, sending back extra mount to Compound protocol contract. Upgradeable.</td>
         </tr>
         <tr>
@@ -138,7 +140,7 @@ All values will be sent to new vault and tokens inside contract will be switched
         </tr>
         <tr>
             <td>MultiRewardsStorage</td>
-            <td><code>7.48</code></td>
+            <td><code>0.69</code></td>
             <td>Multi Rewards contract (storage)</td>
         </tr>
         <tr>
