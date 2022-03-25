@@ -16,6 +16,7 @@ import "./TransferETHHelper.sol";
 import "./JFeesCollectorStorage.sol";
 import "./interfaces/IJAdminTools.sol";
 import "./interfaces/IJFeesCollector.sol";
+import "./interfaces/IMultiRewards.sol";
 
 contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFeesCollectorStorage, IJFeesCollector {
     using SafeMathUpgradeable for uint256;
@@ -207,6 +208,14 @@ contract JFeesCollector is OwnableUpgradeable, ReentrancyGuardUpgradeable, JFees
         //uint256 amountOutMin = reserveB.div(reserveA).mul(_amount);
         //uint256 amountOutMin = UniswapV2Library.getAmountOut(_amount, reserveA, reserveB);
         uniV2Router02.swapExactTokensForTokens(_amount, amountOutMin, path, address(this), block.timestamp);
+    }
+
+    function callMRDistribution(address _mrAddress, address _rewardsToken, uint256 _amount) external onlyAdmins {
+        uint256 tokenBal = getTokenBalance(_rewardsToken);
+        require(tokenBal >= _amount, "Not enough token balance");
+        SafeERC20Upgradeable.safeApprove(IERC20Upgradeable(_rewardsToken), _mrAddress, _amount);
+        IMultiRewards(_mrAddress).notifyRewardAmount(_rewardsToken, _amount);
+        emit TokenDistributedViaMR(_rewardsToken, _amount);
     }
 
 }
